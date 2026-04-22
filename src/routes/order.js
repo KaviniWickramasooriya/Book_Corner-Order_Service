@@ -9,7 +9,7 @@ router.post('/', verifyToken, async (req, res) => {
   try {
     const order = await OrderRepository.create({
       userId: req.user.id,
-      username: req.user.username || 'Unknown',
+      username: req.user.username || req.user.email || 'Customer',
       items: req.body.items,
       totalAmount: req.body.totalAmount,
       status: 'pending'
@@ -20,7 +20,7 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
-// GET MY ORDERS
+// GET MY ORDERS (Customer)
 router.get('/my', verifyToken, async (req, res) => {
   try {
     const orders = await OrderRepository.getMyOrders(req.user.id);
@@ -32,7 +32,10 @@ router.get('/my', verifyToken, async (req, res) => {
 
 // ADMIN: GET ALL ORDERS
 router.get('/', verifyToken, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ message: 'Admin only' });
+  if (req.user.role !== 'admin' && req.user.role !== 'owner') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  
   try {
     const result = await OrderRepository.getAllOrders({
       page: parseInt(req.query.page) || 1,
@@ -47,7 +50,10 @@ router.get('/', verifyToken, async (req, res) => {
 
 // UPDATE ORDER STATUS (Admin/Owner)
 router.patch('/:id/status', verifyToken, async (req, res) => {
-  if (!['admin', 'owner'].includes(req.user.role)) return res.status(403).json({ message: 'Not allowed' });
+  if (!['admin', 'owner'].includes(req.user.role)) {
+    return res.status(403).json({ message: 'Not allowed' });
+  }
+  
   try {
     const order = await OrderRepository.updateStatus(req.params.id, req.body.status);
     if (!order) return res.status(404).json({ message: 'Order not found' });

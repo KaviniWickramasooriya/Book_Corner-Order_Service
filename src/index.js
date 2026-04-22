@@ -11,10 +11,10 @@ const app = express();
 // SECURITY BEST PRACTICE 
 app.use(helmet()); 
 
-// CORS configuration is vital for cross-service communication [cite: 9, 10]
+// CORS configuration is vital for cross-service communication
 app.use(cors({
   origin: '*', // For production, replace with your frontend AWS URL
-  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
