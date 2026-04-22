@@ -1,20 +1,18 @@
-# Use an official Node.js lightweight runtime as a parent image
+# Use an official Node.js lightweight runtime
 FROM node:18-alpine
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json first to leverage Docker cache
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install project dependencies
 RUN npm install
 
-# Copy the rest of your application's source code
+# Copy the rest of your application code
 COPY . .
 
-# Expose the port your app runs on (change 3000 if your app uses a different port)
+# Expose the port
 EXPOSE 3003
 
-# Command to run your application
+# Command to run your app
 CMD ["npm", "start"]
