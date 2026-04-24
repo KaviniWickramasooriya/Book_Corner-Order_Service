@@ -3,7 +3,7 @@ name: Order Service CI/CD
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch: # This adds the manual "Run" button!
+  workflow_dispatch:
 
 jobs:
   build-and-push:
@@ -12,7 +12,22 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for SonarCloud
 
+      # 1. DevSecOps Security Scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=YOUR_PROJECT_KEY
+            -Dsonar.organization=YOUR_ORGANIZATION_KEY
+            -Dsonar.sources=src/
+
+      # 2. Docker Build & Push (Only happens if the scan passes!)
       - name: Docker Login
         uses: docker/login-action@v3
         with:
@@ -20,7 +35,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker Image
-        # Notice the "." at the end! It tells Docker the file is in the root folder.
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/book-corner-order-service:latest .
 
       - name: Push Docker Image
