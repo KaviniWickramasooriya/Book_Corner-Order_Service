@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0  # Required for SonarCloud
 
-      # 1. DevSecOps Security Scan
+# 1. DevSecOps Security Scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
@@ -23,10 +23,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=YOUR_PROJECT_KEY
-            -Dsonar.organization=YOUR_ORGANIZATION_KEY
+            -Dsonar.projectKey=KaviniWickramasooriya_Book_Corner-Order_Service
+            -Dsonar.organization=kaviniwickramasooriya
             -Dsonar.sources=src/
-
+            
       # 2. Docker Build & Push (Only happens if the scan passes!)
       - name: Docker Login
         uses: docker/login-action@v3
